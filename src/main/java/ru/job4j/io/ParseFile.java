@@ -19,17 +19,17 @@ public final class ParseFile {
     }
 
     public String getContentByPredicate(Predicate<Character> filter) {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         int data;
         try (BufferedInputStream i = new BufferedInputStream(new FileInputStream(file))) {
-            while ((data = i.read()) > 0) {
+            while ((data = i.read()) != -1) {
                 if (filter.test((char) data)) {
-                    output += (char) data;
+                    output.append((char) data);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return output;
+        return output.toString();
     }
 }
