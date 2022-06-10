@@ -6,7 +6,7 @@ import net.jcip.annotations.ThreadSafe;
 @ThreadSafe
 public class CountBarrier {
 
-    @GuardedBy("this")
+    @GuardedBy("monitor")
     private final Object monitor = this;
     private final int total;
     private int count = 0;
@@ -15,39 +15,22 @@ public class CountBarrier {
         this.total = total;
     }
 
-    public synchronized void count() {
-        count++;
-        System.out.println("count = ".concat(String.valueOf(count)));
-        monitor.notifyAll();
-    }
-
-    public synchronized void await() {
-        while (count < total) {
-            try {
-                monitor.wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+    public void count() {
+        synchronized (monitor) {
+            count++;
+            monitor.notifyAll();
         }
     }
 
-    public static void main(String[] args) {
-        CountBarrier countBarrier = new CountBarrier(3);
-        Thread master = new Thread(
-                () -> {
-                    System.out.println(Thread.currentThread().getName() + " started");
-                    countBarrier.count();
-                    countBarrier.count();
-                    countBarrier.count();
+    public void await() {
+        synchronized (monitor) {
+            while (count < total) {
+                try {
+                    monitor.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-        );
-        Thread slave = new Thread(
-                () -> {
-                    countBarrier.await();
-                    System.out.println(Thread.currentThread().getName() + " started");
-                }
-        );
-        master.start();
-        slave.start();
+            }
+        }
     }
 }

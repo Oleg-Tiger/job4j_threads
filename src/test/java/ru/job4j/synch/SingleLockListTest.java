@@ -2,11 +2,8 @@ package ru.job4j.synch;
 
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
