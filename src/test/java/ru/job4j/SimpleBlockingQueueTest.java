@@ -15,7 +15,11 @@ public class SimpleBlockingQueueTest {
 
         @Override
         public void run() {
-            simpleBlockingQueue.poll();
+            try {
+                simpleBlockingQueue.poll();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -28,8 +32,13 @@ public class SimpleBlockingQueueTest {
 
         @Override
         public void run() {
-            simpleBlockingQueue.offer(1);
-            simpleBlockingQueue.offer(2);
+            try {
+                simpleBlockingQueue.offer(1);
+                simpleBlockingQueue.offer(2);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
         }
     }
 
