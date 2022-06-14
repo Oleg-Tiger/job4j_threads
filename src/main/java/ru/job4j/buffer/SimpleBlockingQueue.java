@@ -1,8 +1,7 @@
-package ru.job4j;
+package ru.job4j.buffer;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -32,5 +31,9 @@ public class SimpleBlockingQueue<T> {
         T rsl = queue.poll();
         notifyAll();
         return rsl;
+    }
+
+    public synchronized boolean isEmpty() {
+        return queue.isEmpty();
     }
 }

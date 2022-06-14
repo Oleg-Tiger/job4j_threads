@@ -1,8 +1,10 @@
-package ru.job4j;
+package ru.job4j.buffer;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SimpleBlockingQueueTest {
 
@@ -52,5 +54,39 @@ public class SimpleBlockingQueueTest {
         consumer.join();
         producer.join();
         assertThat(simpleBlockingQueue.poll(), is(2));
+    }
+
+    @Test
+    public void whenFetchAllThenGetIt() throws InterruptedException {
+        final CopyOnWriteArrayList<String> buffer = new CopyOnWriteArrayList<>();
+        SimpleBlockingQueue<String> simpleBlockingQueue = new SimpleBlockingQueue<>(1);
+        Thread producer = new Thread(
+                () -> {
+                    try {
+                        simpleBlockingQueue.offer("one");
+                        simpleBlockingQueue.offer("two");
+                        simpleBlockingQueue.offer("three");
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+        );
+        Thread consumer = new Thread(
+                () -> {
+                    while (!simpleBlockingQueue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(simpleBlockingQueue.poll());
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        producer.start();
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(buffer, is(Arrays.asList("one", "two", "three")));
     }
 }
