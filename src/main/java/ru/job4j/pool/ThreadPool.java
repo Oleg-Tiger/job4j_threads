@@ -12,7 +12,19 @@ public class ThreadPool {
     public ThreadPool(int size) {
         this.tasks = new SimpleBlockingQueue<>(size);
         for (int i = 0; i < SIZE; i++) {
-            threads.add(new ThreadForPool());
+            Thread thread = new Thread(
+                    () -> {
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try {
+                                tasks.poll().run();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    }
+            );
+            threads.add(thread);
+            thread.start();
         }
     }
 
@@ -21,23 +33,6 @@ public class ThreadPool {
     }
 
     public void shutdown() {
-        for (Thread thread : threads) {
-            thread.start();
-            thread.interrupt();
-        }
-    }
-
-    private class ThreadForPool extends Thread {
-
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted() || !tasks.isEmpty()) {
-                try {
-                    tasks.poll().run();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
+        threads.forEach(Thread::interrupt);
     }
 }

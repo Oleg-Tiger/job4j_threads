@@ -22,14 +22,14 @@ public class ThreadPoolTest {
     }
 
     @Test
-    public void when() throws InterruptedException {
+    public void when3TasksWorkThenCountIs3() throws InterruptedException {
         ThreadPool threadPool = new ThreadPool(3);
         threadPool.work(new RunnableForPool());
         threadPool.work(new RunnableForPool());
         threadPool.work(new RunnableForPool());
-        Thread.sleep(1000);
+        Thread.sleep(500);
         threadPool.shutdown();
-        Thread.sleep(1000);
+        Thread.sleep(500);
         assertThat(COUNT.get(), is(3));
     }
 }
