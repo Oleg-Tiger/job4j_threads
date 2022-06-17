@@ -8,10 +8,10 @@ public class CASCount {
     private  final AtomicReference<Integer> count = new AtomicReference<>(0);
 
     public void increment() {
-        int countBeforeIncrement;
+        int countNow;
         do {
-            countBeforeIncrement = count.get();
-        } while (!count.compareAndSet(countBeforeIncrement, ++countBeforeIncrement));
+            countNow = count.get();
+        } while (!count.compareAndSet(countNow, countNow + 1));
     }
 
     public int get() {
