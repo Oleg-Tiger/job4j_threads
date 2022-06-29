@@ -29,15 +29,12 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
         rightSearch.fork();
         int left = leftSearch.join();
         int right = rightSearch.join();
-        if (left == -1) {
-            return right;
-        }
-        return left;
+        return left > right ? left : right;
     }
 
     public Integer linearSearch() {
         int rsl = -1;
-        for (int i = 0; i < array.length; i++) {
+        for (int i = from; i <= to; i++) {
             if (array[i].equals(obj)) {
                 rsl = i;
                 break;
